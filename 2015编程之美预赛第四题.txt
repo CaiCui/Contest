@@ -1,0 +1,86 @@
+#include <iostream>
+#include<stack>
+using namespace std;
+stack<char>op;
+int coc=0;
+int flag=0;
+char cstr[100];
+int tag=0;
+void dfs(int n,int k,int lnum,int rnum)
+{
+    int left=lnum;
+    int right=rnum;
+      if(k==n)
+      {
+
+            flag=0;
+          for(int i=0;i<n;i++)
+            {
+                if(cstr[i]=='(')
+                 op.push(cstr[i]);
+                else
+                {
+                    if(op.empty())
+                    {
+                        flag=1;
+                        break;
+                    }
+                    op.pop();
+
+                 }
+            }
+            if(flag==0)
+            {
+                coc++;
+                  //for(int i=0;i<n;i++)
+                  //  cout<<cstr[i];
+                  //  cout<<endl;
+            }
+
+      }
+      else
+      {
+
+            for(int i=0;i<2;i++)
+          {
+
+            if(i==0&&left>0)
+            {
+              left--;
+              cstr[k]='(';
+             if(k<7&&right<left)
+                {continue;}
+              else
+               dfs(n,k+1,left,right);
+              left++;
+            }
+            if(i==1)
+            {
+              if(right>0)
+              {
+                  right--;
+                  cstr[k]=')';
+                 if(k<7&&right<left)
+                   {break;}
+                 else
+                    {
+                        dfs(n,k+1,left,right);
+
+                    }
+                  right++;
+              }
+            }
+          }
+
+        }
+
+
+
+}
+int main()
+{   int n;
+    cin>>n;
+    dfs(2*n,0,n,n);
+    cout<<coc<<endl;
+    return 0;
+}
