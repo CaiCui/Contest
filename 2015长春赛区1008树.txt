@@ -1,0 +1,139 @@
+//长春1008
+#include <iostream>
+#include<cstring>
+#include<stdio.h>
+#include<stdlib.h>
+using namespace std;
+typedef struct node{
+  int data;
+  struct node *lchild;
+  struct node *rchild;
+
+}*BiTree,BiTNode;
+int n;
+int EQ(int a,int b)
+{
+   if(a==b)
+	   return 1;
+   return 0;
+}
+int LT(int a,int b)
+{
+   if(a<b)
+	   return 1;
+   return 0;
+}
+//查找
+bool search2(BiTree T,int key,BiTree f,BiTree &p,int k)//T为根节点，f指向T的双亲，p记录最后找到的结点指针，找到则记录找到的，否则记录其父亲
+{
+	if(!T)
+	{
+		p=f;
+		return false;
+	}
+	else if(EQ(key,T->data))//注意T为指针类型，所以用→，若是(*T).data是对的
+	{
+		p=T;
+               if(f==NULL)
+               cout<<' ';
+		cout<<endl;
+		return true;
+	}
+	else if(LT(key,T->data))
+	{
+               cout<<'E';
+		return search2(T->lchild,key,T,p,k+1);
+	}
+	else
+		{
+                cout<<'W';
+		    return search2(T->rchild,key,T,p,k+1);
+
+		}
+
+}
+//插入
+bool search(BiTree T,int key,BiTree f,BiTree &p)//T为根节点，f指向T的双亲，p记录最后找到的结点指针，找到则记录找到的，否则记录其父亲
+{
+	if(!T)
+	{
+		p=f;
+		return false;
+	}
+	else if(EQ(key,T->data))//注意T为指针类型，所以用→，若是(*T).data是对的
+	{
+		p=T;
+		return true;
+	}
+	else if(LT(key,T->data))
+	{
+		return search(T->lchild,key,T,p);
+	}
+	else
+		return search(T->rchild,key,T,p);
+
+}
+bool insert(BiTree &T,int e)
+{
+       BiTree p,s;
+       if(!search(T,e,NULL,p))
+  {
+
+          s=(BiTree)malloc(sizeof(BiTNode));
+          s->data=e;
+		  s->lchild=NULL;
+		  s->rchild=NULL;
+		  if(!p)//考虑到第一次建树的时候
+			  {
+			      p=s;//为根
+
+			  }
+          else if(LT(e,p->data))
+			  p->lchild=s;
+		  else
+			  p->rchild=s;
+
+		  return true;
+  }
+  else
+    return false;
+
+
+}
+
+
+int main()
+{
+    int T;
+    int m,i,j,x;
+    BiTree p,q,z,temp,gen;
+    p=q=z=NULL;
+    while(cin>>T)
+    {
+        for(j=0;j<T;j++)
+        {
+            cin>>n;
+          cin>>x;
+          gen=(BiTree)malloc(sizeof(BiTNode));
+          gen->data=x;
+          gen->lchild=gen->rchild=NULL;
+          p=gen;
+          for(i=0;i<n-1;i++)
+          {
+
+              cin>>x;
+              insert(p,x);
+
+          }
+          cin>>m;
+          temp=gen;
+         for(i=0;i<m;i++)
+          {
+              cin>>x;
+              search2(p,x,NULL,z,0);
+              p=temp;
+          }
+        }
+    }
+    return 0;
+}
