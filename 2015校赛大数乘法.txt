@@ -1,0 +1,122 @@
+#include<iostream>
+#include<cstring>
+using namespace std;
+#define MAXN 220
+char a[MAXN];
+char b[MAXN];
+int c[MAXN*MAXN];
+int za[MAXN];
+int zb[MAXN];
+int main()
+{  
+    int n,i,j,k,t,q;
+    int strlena,strlenb;
+    int flag;
+    while( cin>>n)
+    {
+       for(q=0;q<n;q++)
+       {   
+           k=0;
+            memset(c,0,sizeof(c));
+                flag=0;//正数
+     
+           cin>>a;
+           strlena=strlen(a);
+           cin>>b;
+           strlenb=strlen(b);
+           if((a[0]=='-'&&b[0]!='-')||(a[0]!='-'&&b[0]=='-'))
+               flag=1;
+           else
+               flag=0;
+           for(j=strlena-1;j>=0;j--)
+               if(a[j]=='-')
+                   continue;
+               else
+                   za[k++]=a[j]-'0';
+           strlena=k;
+           k=0;
+           for(j=strlenb-1;j>=0;j--)
+               if(b[j]=='-')
+                   continue;
+               else
+                   zb[k++]=b[j]-'0';
+           strlenb=k; 
+           k=0;
+           if(strlena<=strlenb)
+           { 
+              for(i=0;i<strlena;i++)
+               for(j=0;j<strlenb;j++)
+               {   
+                    c[i+j+1]+=(za[i]*zb[j]+c[i+j])/10;
+                      
+                   c[i+j]=(za[i]*zb[j]+c[i+j])%10;
+                      
+               }
+           }
+           else
+           {
+              for(j=0;j<strlenb;j++)
+               for(i=0;i<strlena;i++)
+               {   
+                    c[i+j+1]+=(za[i]*zb[j]+c[i+j])/10;
+                      
+                    c[i+j]=(za[i]*zb[j]+c[i+j])%10;
+                
+               }
+           }
+         
+           if(flag)//负数
+           {
+                     cout<<"-";
+                     
+                     for(i=40000;i>=0;i--)
+                         if(c[i]!=0)
+                         {   
+                             t=i;
+                             break;
+                         }
+ 
+                     for(i=t;i>=0;i--)
+                         cout<<c[i];
+                     cout<<endl;
+           }
+           else//正数
+           {
+               
+              if(a[0]=='-'&&b[0]=='-')//两负数同两正数
+              {
+                      cout<<"+";
+                   for(i=40000;i>=0;i--)
+                         if(c[i]!=0)
+                         {   
+                             t=i;
+                             break;
+                         }
+                     for(i=t;i>=0;i--)
+                         cout<<c[i];
+                     cout<<endl;
+              }
+              else//两正数
+              {
+                           
+                    for(i=40000;i>=0;i--)
+                         if(c[i]!=0)
+                         {   
+                             t=i;
+                             break;
+                         }
+                     for(i=t;i>=0;i--)
+                         cout<<c[i];
+                     cout<<endl;
+              }
+           }
+     
+          
+       }
+      
+        
+       }
+     
+     
+    return 0;
+}

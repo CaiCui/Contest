@@ -1,0 +1,55 @@
+E题 青蛙的爱情
+题意：求无向图中一个顶点，到另一个顶点的路径中最大边权的最小值。
+这个题的方法有两种吧（窝只想到两种，求补充……）。
+一是求最小生成树，答案一定是在最小生成树中。。这个想一想应该可以大致想通吧。
+二是解决这种最值问题很常用的套路：二分法。假设当前最大边权为X，如果图中存在一条路径连接起点和终点，且边权均小于X，那么X就是可行的。如果X是我们所求的最终答案，那么比X小的边权一定都不可行，比X大的边权一定都可行。这东西就对应了：……0000000001111111111这样一个无限序列，我们所要求的正是最左边那个1的位置。这可以通过二分法快速实现。
+
+#include <cstdio>
+#include <cstring>
+#include <cmath>
+struct Pt
+{
+    float x, y;
+} pts[210];
+float G[210][210];
+bool vis[210];
+int n, t = 0;
+bool dfs(int cur, float bound)
+{
+    vis[cur] = true;
+    if (cur == 1)
+        return true;
+    bool ans = false;
+    for (int u = 0; u < n && !ans; u++)
+        if (!vis[u] && G[cur][u] <= bound)
+            ans |= dfs(u, bound);
+    return ans;
+}
+int main()
+{
+    while (scanf("%d", &n), n)
+    {
+        for (int i = 0; i < n; i++)
+            scanf("%f%f", &pts[i].x, &pts[i].y);
+        float maxDis = 0.0;
+        for (int i = 0; i < n; i++)
+            for (int j = i; j < n; j++)
+            {
+                G[i][j] = G[j][i] = sqrt(pow(pts[i].x - pts[j].x, 2.0) + pow(pts[i].y - pts[j].y, 2.0));
+                if (G[i][j] > maxDis)
+                    maxDis = G[i][j];
+            }
+        float l = 0.0f, r = maxDis, mid;
+        while (fabs(l - r) > 1e-4)
+        {
+            mid = (l + r) / 2.0f;
+            memset(vis, false, sizeof(vis));
+            if (dfs(0, mid))
+                r = mid;
+            else
+                l = mid;
+        }
+        printf("case #%d\nFrog Distance = %.3f\n\n", ++t, mid);
+    }
+    return 0;
+}

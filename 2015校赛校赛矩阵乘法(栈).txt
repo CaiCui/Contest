@@ -1,0 +1,116 @@
+//校赛矩阵相乘，栈应用
+//思路:把握好三条。1.遇到左括号就进栈，2连续遇到两个字母就退栈做乘积后再进栈，否则只有一个字母时进栈，3.在满足1,2两条的
+//情况下遇到右括号，就先退两次栈，然后判断栈为空与否或者栈顶元素是'('还是字母，若是字母则继续做乘积后进栈，否则直接把内层括号中的
+//字母进栈即可，若是栈已经退到空则成功。
+#include<cstdio>
+#include<cstring>
+#include<map>
+#include<stack>
+using namespace std;
+
+struct mat{
+ char name;
+ int a,b;
+};
+mat mats[100];
+char exp[110];
+
+int main()
+{
+    int n,m;
+    while(scanf("%d%d",&n,&m),n||m)
+    {
+        for(int i=0;i<n;i++)
+        {
+            getchar();
+            scanf("%c%d%d",&mats[i].name,&mats[i].a,&mats[i].b);
+        }
+        while(m--)
+        {
+            scanf("%s",exp);
+            stack<int>sta;
+            map<int,mat>matrix;
+            int matIndex=1000;
+            for(int i=0;i<n;i++)
+                matrix[(int)mats[i].name]=mats[i];//建立map表映射关系,插入数据
+            bool ok=true;
+            int i=0;
+            int len=strlen(exp);
+            int ans=0;
+            while(i<len)
+            {
+                if(exp[i]>'A'&&exp[i]<'Z')
+                {
+                    if(sta.size()&&sta.top()!='(')
+                    {
+                        int v=sta.top();//取出栈顶元素
+                        sta.pop();
+                        mat a=matrix[v];
+                        mat b=matrix[exp[i]];
+                        mat newmat;
+                        if(a.b!=b.a)
+                        {
+                            ok=false;
+                            break;
+                        }
+                        else
+                        {
+                            newmat.a=a.a;
+                            newmat.b=b.b;
+                            ans+=a.a*a.b*b.b;
+
+                        }
+                        matrix[matIndex]=newmat;
+                        sta.push(matIndex);
+                        matIndex++;
+
+                    }
+                    else
+                       sta.push(exp[i]);
+                }
+                else if (exp[i]=='(')//左括号进栈
+                {
+                    sta.push('(');
+                }
+                else if(exp[i]==')')//每次处理为空或者一个左括号一个字母一个左括号或一个字母两个左括号
+                {
+                    int v=sta.top();
+                    sta.pop();
+                    sta.pop();
+                    if(sta.size()&&sta.top()!='(')
+                    {
+                        int vv = sta.top();
+                        sta.pop();
+                        mat a = matrix[vv];
+                        mat b = matrix[v];
+                        mat newMat;
+                        if (a.b != b.a)
+                        {
+                            ok = false;
+                            break;
+                        }
+                        else
+                        {
+                            newMat.a = a.a;
+                            newMat.b = b.b;
+                            ans += a.a * a.b * b.b;
+                        }
+                        matrix[matIndex] = newMat;
+                        sta.push(matIndex);
+                        matIndex++;
+                    }
+                    else
+                        sta.push(v);
+                }
+                i++;
+
+            }
+            if(!ok)
+                puts("error");
+            else
+                printf("%d\n",ans);
+        }
+
+    }
+    return 0;
+}

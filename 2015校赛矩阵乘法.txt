@@ -1,0 +1,115 @@
+C题 矩阵乘法
+题意：对于给定了行列数的矩阵，求计算矩阵表达式所需的乘法次数。
+这就是个简单的表达式计算啊！直接用栈模拟即可，代码稍多。当然学过编译原理的同学可以直接递归下降分析法，分分钟就过掉了。
+这个题有一个小Trick，输入字符前要getchar一下，不然就把换行读进来了。。比赛时候因为这个，调了20分钟也是醉了。。
+#include <cstdio>
+#include <cstring>
+#include <map>
+#include <stack>
+using namespace std;
+ 
+struct mat
+{
+    char name;
+    int a, b;
+};
+mat mats[100];
+char exp[110];
+ 
+int main()
+{
+    int n, m;
+    while (scanf("%d%d", &n, &m), n || m)
+    {
+        for (int i = 0; i < n; i++)
+        {
+            getchar();
+            scanf("%c%d%d", &mats[i].name, &mats[i].a, &mats[i].b);
+        }
+ 
+ 
+        while (m--)
+        {
+            scanf("%s", exp);
+ 
+            stack<int> sta;
+            map<int, mat> matrix;
+            int matIndex = 1000;
+ 
+            for (int i = 0; i < n; i++)
+                matrix[(int)mats[i].name] = mats[i];
+ 
+            bool ok = true;
+            int i = 0, len = strlen(exp);
+            int ans = 0;
+            while (i < len)
+            {
+                if (exp[i] >= 'A' && exp[i] <= 'Z')
+                {
+                    if (sta.size() && sta.top() != '(')
+                    {
+                        int v = sta.top();
+                        sta.pop();
+                        mat a = matrix[v];
+                        mat b = matrix[exp[i]];
+                        mat newMat;
+                        if (a.b != b.a)
+                        {
+                            ok = false;
+                            break;
+                        }
+                        else
+                        {
+                            newMat.a = a.a;
+                            newMat.b = b.b;
+                            ans += a.a * a.b * b.b;
+                        }
+                        matrix[matIndex] = newMat;
+                        sta.push(matIndex);
+                        matIndex++;
+                    }
+                    else
+                        sta.push(exp[i]);
+                }
+                else if (exp[i] == '(')
+                    sta.push('(');
+                else if (exp[i] == ')')
+                {
+                    int v = sta.top();
+                    sta.pop();
+                    sta.pop();
+                    if (sta.size() && sta.top() != '(')
+                    {
+                        int vv = sta.top();
+                        sta.pop();
+                        mat a = matrix[vv];
+                        mat b = matrix[v];
+                        mat newMat;
+                        if (a.b != b.a)
+                        {
+                            ok = false;
+                            break;
+                        }
+                        else
+                        {
+                            newMat.a = a.a;
+                            newMat.b = b.b;
+                            ans += a.a * a.b * b.b;
+                        }
+                        matrix[matIndex] = newMat;
+                        sta.push(matIndex);
+                        matIndex++;
+                    }
+                    else
+                        sta.push(v);
+                }
+                i++;
+            }
+            if (!ok)
+                puts("error");
+            else
+                printf("%d\n", ans);
+        }
+    }
+    return 0;
+}
